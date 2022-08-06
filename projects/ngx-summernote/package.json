@@ -1,21 +1,24 @@
 {
-  "name": "ngx-summernote",
-  "version": "0.8.8",
-  "author": "Luca Lulani",
+  "name": "@scompiler/ngx-summernote",
+  "private": false,
+  "version": "0.10.0",
   "license": "MIT",
   "readme": "README.md",
-  "homepage": "https://github.com/lula/ngx-summernote",
+  "homepage": "https://github.com/scompiler/ngx-summernote",
   "bugs": {
-    "url": "https://github.com/lula/ngx-summernote/issues"
+    "url": "https://github.com/scompiler/ngx-summernote/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lula/ngx-summernote.git"
+    "url": "https://github.com/scompiler/ngx-summernote.git"
   },
   "peerDependencies": {
-    "@angular/common": "8.x - 13.x",
-    "@angular/core": "8.x - 13.x",
-    "@angular/forms": "8.x - 13.x",
-    "summernote": ">=0.8.10"
+    "@angular/common": "^14.0.0",
+    "@angular/core": "^14.0.0",
+    "@angular/forms": "^14.0.0",
+    "summernote": ">=0.8.20"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
   }
 }

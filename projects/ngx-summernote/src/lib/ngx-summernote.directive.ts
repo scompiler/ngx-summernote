@@ -9,7 +9,7 @@ import {
   OnChanges,
   OnDestroy,
   OnInit,
-  Output
+  Output, SimpleChanges
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { combineLatest, Subscription } from 'rxjs';
@@ -18,7 +18,7 @@ import { map } from 'rxjs/operators';
 import { SummernoteOptions } from './summernote-options';
 import { codeBlockButton } from './code-block.button';
 
-declare var $;
+declare var $: any;
 
 @Directive({
   // tslint:disable-next-line:directive-selector
@@ -41,9 +41,8 @@ export class NgxSummernoteDirective
 
       options.callbacks = {
         ...options.callbacks,
-        onImageUpload: files => this.uploadImage(files),
-        onMediaDelete: files =>
-          this.mediaDelete.emit({ url: $(files[0]).attr('src') })
+        onImageUpload: (files: File[]) => this.uploadImage(files),
+        onMediaDelete: (files: File[]) => this.mediaDelete.emit({ url: $(files[0]).attr('src') })
       };
 
       // add custom buttons
@@ -68,20 +67,20 @@ export class NgxSummernoteDirective
 
   @Output() blur: EventEmitter<any> = new EventEmitter<any>();
 
-  @Input() ngxSummernoteDisabled: boolean;
+  @Input() ngxSummernoteDisabled: boolean = false;
 
   private _options: SummernoteOptions = {};
 
   private SPECIAL_TAGS: string[] = ['img', 'button', 'input', 'a'];
   private INNER_HTML_ATTR = 'innerHTML';
-  private _hasSpecialTag: boolean;
+  private _hasSpecialTag: boolean = false;
   private _$element: any; // jquery wrapped element
   private _editor: any; // editor element
-  private _model: string;
-  private _oldModel: string = null;
-  private _editorInitialized: boolean;
+  private _model?: string;
+  private _oldModel: string | null = null;
+  private _editorInitialized: boolean = false;
 
-  private uploadSub: Subscription;
+  private uploadSub: Subscription | null = null;
 
   constructor(
     private el: ElementRef,
@@ -106,15 +105,15 @@ export class NgxSummernoteDirective
     this.createEditor();
   }
 
-  ngOnChanges(changes) {
+  ngOnChanges(changes: SimpleChanges) {
     if (this._editorInitialized && changes) {
       if (
-        changes.ngxSummernoteDisabled &&
-        !changes.ngxSummernoteDisabled.firstChange &&
-        changes.ngxSummernoteDisabled.currentValue !==
-          changes.ngxSummernoteDisabled.previousValue
+        changes['ngxSummernoteDisabled'] &&
+        !changes['ngxSummernoteDisabled'].firstChange &&
+        changes['ngxSummernoteDisabled'].currentValue !==
+          changes['ngxSummernoteDisabled'].previousValue
       ) {
-        if (changes.ngxSummernoteDisabled.currentValue) {
+        if (changes['ngxSummernoteDisabled'].currentValue) {
           this._$element.summernote('disable');
         } else {
           this._$element.summernote('enable');
@@ -170,10 +169,10 @@ export class NgxSummernoteDirective
 
       if (this._hasSpecialTag) {
         const attributeNodes = this._$element[0].attributes;
-        const attrs = {};
+        const attrs: {[attributeName: string]: string} = {};
 
         for (let i = 0; i < attributeNodes.length; i++) {
-          const attrName = attributeNodes[i].name;
+          const attrName = attributeNodes[i].name as string;
           if (
             this._options.angularIgnoreAttrs &&
             this._options.angularIgnoreAttrs.indexOf(attrName) !== -1
@@ -218,9 +217,9 @@ export class NgxSummernoteDirective
     });
 
     this._$element.on('summernote.change', function(
-      event,
-      contents,
-      $editable
+      event: any,
+      contents: any,
+      $editable: any
     ) {
       setTimeout(function() {
         self.updateModel(contents);
@@ -290,7 +289,7 @@ export class NgxSummernoteDirective
     if (this._model || this._model === '') {
       this._oldModel = this._model;
       if (this._hasSpecialTag) {
-        const tags: Object = this._model;
+        const tags: any = this._model;
         // add tags on element
         if (tags) {
           for (const attr in tags) {
@@ -325,7 +324,7 @@ export class NgxSummernoteDirective
   //   return null;
   // }
 
-  private async uploadImage(files) {
+  private async uploadImage(files: File[]) {
     if (this._options.uploadImagePath) {
       this.imageUpload.emit({ uploading: true });
 
@@ -334,18 +333,17 @@ export class NgxSummernoteDirective
         const data = new FormData();
         data.append('image', file);
         const obs = this.http
-          .post(this._options.uploadImagePath, data, this._options.uploadImageRequestOptions)
+          .post<{path?: string}>(this._options.uploadImagePath, data, this._options.uploadImageRequestOptions)
           .pipe(
             map(
-              (response: { path: string }) =>
-                response && typeof response.path === 'string' && response.path
+              (response) => response && typeof response.path === 'string' && response.path
             )
           );
         requests.push(obs);
       }
 
       this.uploadSub = combineLatest(requests).subscribe(
-        (remotePaths: string[]) => {
+        (remotePaths: (string | false)[]) => {
           for (const remotePath of remotePaths) {
             this._$element.summernote('insertImage', remotePath);
           }
@@ -358,7 +356,7 @@ export class NgxSummernoteDirective
     }
   }
 
-  insertFromDataURL(files) {
+  insertFromDataURL(files: File[]) {
     for (const file of files) {
       const reader = new FileReader();
       reader.readAsDataURL(file);

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 
-declare var $;
+declare var $: any;
 
 @Component({
   selector: 'app-root',
@@ -12,7 +12,7 @@ declare var $;
 export class AppComponent implements OnInit {
   showTemplateForm = false;
 
-  html: string;
+  html: string = '';
 
   form: FormGroup;
   config: any = {
@@ -76,7 +76,7 @@ export class AppComponent implements OnInit {
   editorDisabled = false;
 
   get sanitizedHtml() {
-    return this.sanitizer.bypassSecurityTrustHtml(this.form.get('html').value);
+    return this.sanitizer.bypassSecurityTrustHtml(this.form.get('html')?.value);
   }
 
   constructor(private sanitizer: DomSanitizer) {
@@ -99,16 +99,16 @@ export class AppComponent implements OnInit {
     console.log('Blur');
   }
 
-  onDelete(file) {
+  onDelete(file: any) {
     console.log('Delete file', file.url);
   }
 
-  summernoteInit(event) {
+  summernoteInit(event: any) {
     console.log(event);
   }
 }
 
-function customButton(context) {
+function customButton(context: any) {
   const ui = $.summernote.ui;
   const button = ui.button({
     contents: '<i class="note-icon-magic"></i> Hello',

@@ -1,4 +1,4 @@
-declare var $;
+declare var $: any;
 
 const codeBlockButtonStyle = `font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
 font-size: 12px;
@@ -12,7 +12,7 @@ border: 1px solid rgb(234, 236, 240);
 border-radius: 4px; color: #60a0b0;
 white-space: pre-wrap;`;
 
-export const codeBlockButton = function(context) {
+export const codeBlockButton = function(context: any) {
   const ui = $.summernote.ui;
 
   // create button
@@ -24,9 +24,9 @@ export const codeBlockButton = function(context) {
     click: function() {
       let selectedText = null;
       // The below code will copy the selected block and add it into our code block
-      if (window.getSelection) {
-        selectedText = window
-          .getSelection()
+      const selection = window.getSelection();
+      if (selection) {
+        selectedText = selection
           .toString()
           .replace(/^\s+|\s+$/g, '');
       }

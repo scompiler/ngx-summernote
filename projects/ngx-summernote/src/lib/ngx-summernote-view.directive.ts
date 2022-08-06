@@ -2,8 +2,6 @@ import {
     Directive, Input, ElementRef, Renderer2, AfterViewInit
 } from '@angular/core';
 
-declare var $;
-
 @Directive({
     // tslint:disable-next-line:directive-selector
     selector: '[ngxSummernoteView]'

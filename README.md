@@ -10,31 +10,33 @@ Install ngx-summernote and dependencies:
 
 Compatibility:
 
-Angular | ngx-summernote
-------- | --------------
-13      | 0.8.8
-12      | 0.8.5
-11      | 0.8.4
-10      | 0.8.x
-9       | 0.7.x
-8       | 0.7.x
-7       | 0.6.x
-6       | 0.5.4
+| Angular | ngx-summernote |
+|---------|----------------|
+| 14      | 0.8.8          |
+| 12      | 0.8.5          |
+| 11      | 0.8.4          |
+| 10      | 0.8.x          |
+| 9       | 0.7.x          |
+| 8       | 0.7.x          |
+| 7       | 0.6.x          |
+| 6       | 0.5.4          |
 
 ## Editor
 
 Add JQuery and Summernote scripts and styles to the angular.json file:
 
-```json
-"styles": [
-  ...
-  "node_modules/summernote/dist/summernote-lite.min.css"
-],
-"scripts": [
-  ...
-  "node_modules/jquery/dist/jquery.min.js",
-  "node_modules/summernote/dist/summernote-lite.min.js"
-]
+```json5
+{
+  "styles": [
+    // ...
+    "node_modules/summernote/dist/summernote-lite.min.css"
+  ],
+  "scripts": [
+    // ...
+    "node_modules/jquery/dist/jquery.min.js",
+    "node_modules/summernote/dist/summernote-lite.min.js"
+  ]
+}
 ```
 
 Add NgxSummernoteModule to the app.module.ts file OR to the subcomponent module.ts file if using lazy loading:
@@ -68,7 +70,7 @@ You may also configure Summernote with your own config:
 
 ```typescript
 export class AppComponent implements OnInit {
-  ...
+  // ...
   config = {
     placeholder: '',
     tabsize: 2,
@@ -84,7 +86,7 @@ export class AppComponent implements OnInit {
     ],
     fontNames: ['Helvetica', 'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Roboto', 'Times']
   }
-  ...
+  // ...
 }
 ```
 
@@ -151,12 +153,12 @@ function customButton(context) {
 
 export class AppComponent implements OnInit {
   config: any = {
-    ...
+    // ...
     buttons: {
       'testBtn': customButton
     }
   };
-  ...
+  // ...
 }
 ```
 
