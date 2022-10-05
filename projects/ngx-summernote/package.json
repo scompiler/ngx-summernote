@@ -1,7 +1,7 @@
 {
   "name": "@scompiler/ngx-summernote",
   "private": false,
-  "version": "0.10.0",
+  "version": "0.11.0",
   "license": "MIT",
   "readme": "README.md",
   "homepage": "https://github.com/scompiler/ngx-summernote",
@@ -16,7 +16,7 @@
     "@angular/common": "^14.0.0",
     "@angular/core": "^14.0.0",
     "@angular/forms": "^14.0.0",
-    "summernote": ">=0.8.20"
+    "@scompiler/summernote": ">=0.2.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"
