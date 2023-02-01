@@ -186,3 +186,13 @@ npm start
 - [Tim Börner](https://github.com/tim-boerner)
 - [Jason K.](https://github.com/lonerzzz)
 - [Elle](https://github.com/LuigiElleBalotta)
+
+## Release Preparation
+
+- Change version:
+  - projects/ngx-summernote/package.json
+  - package.json
+- Build package. Run command ``npm run build:lib``.
+- Publish package. Run command ``npm publish`` from ``dist/ngx-summernote`` directory.
+- Make git commit.
+
