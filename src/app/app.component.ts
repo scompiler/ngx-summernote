@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 
-declare var $: any;
+declare var Summernote: any;
 
 @Component({
   selector: 'app-root',
@@ -109,15 +109,15 @@ export class AppComponent implements OnInit {
 }
 
 function customButton(context: any) {
-  const ui = $.summernote.ui;
+  const ui = Summernote.meta.ui;
   const button = ui.button({
     contents: '<i class="note-icon-magic"></i> Hello',
     tooltip: 'Custom button',
-    container: '.note-editor',
+    container: context.options.container,
     className: 'note-btn',
     click: function () {
       context.invoke('editor.insertText', 'Hello from test btn!!!');
     },
   });
-  return button.render();
+  return button.render2();
 }

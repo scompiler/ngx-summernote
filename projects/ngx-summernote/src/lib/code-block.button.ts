@@ -1,4 +1,4 @@
-declare var $: any;
+declare var Summernote: any;
 
 const codeBlockButtonStyle = `font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
 font-size: 12px;
@@ -13,13 +13,13 @@ border-radius: 4px; color: #60a0b0;
 white-space: pre-wrap;`;
 
 export const codeBlockButton = function(context: any) {
-  const ui = $.summernote.ui;
+  const ui = Summernote.meta.ui;
 
   // create button
   const button = ui.button({
     contents: '<i class="note-icon-frame" style="margin-right: 4px"></i> Code block',
     tooltip: 'Add code block',
-    container: '.note-editor',
+    container: context.options.container,
     className: 'note-btn',
     click: function() {
       let selectedText = null;
@@ -36,5 +36,5 @@ export const codeBlockButton = function(context: any) {
     }
   });
 
-  return button.render(); // return button as jquery object
+  return button.render2(); // return button as jquery object
 };

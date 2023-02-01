@@ -18,7 +18,7 @@ import { map } from 'rxjs/operators';
 import { SummernoteOptions } from './summernote-options';
 import { codeBlockButton } from './code-block.button';
 
-declare var $: any;
+declare var Summernote: any;
 
 @Directive({
   // tslint:disable-next-line:directive-selector
@@ -42,7 +42,6 @@ export class NgxSummernoteDirective
       options.callbacks = {
         ...options.callbacks,
         onImageUpload: (files: File[]) => this.uploadImage(files),
-        onMediaDelete: (files: File[]) => this.mediaDelete.emit({ url: $(files[0]).attr('src') })
       };
 
       // add custom buttons
@@ -74,8 +73,7 @@ export class NgxSummernoteDirective
   private SPECIAL_TAGS: string[] = ['img', 'button', 'input', 'a'];
   private INNER_HTML_ATTR = 'innerHTML';
   private _hasSpecialTag: boolean = false;
-  private _$element: any; // jquery wrapped element
-  private _editor: any; // editor element
+  private _editorEl!: HTMLElement; // editor element
   private _model?: string;
   private _oldModel: string | null = null;
   private _editorInitialized: boolean = false;
@@ -94,10 +92,6 @@ export class NgxSummernoteDirective
       this._hasSpecialTag = true;
     }
 
-    // jquery wrap and store element
-
-    // this._$element = <any>$(element);
-
     this.zone = zone;
   }
 
@@ -114,9 +108,9 @@ export class NgxSummernoteDirective
           changes['ngxSummernoteDisabled'].previousValue
       ) {
         if (changes['ngxSummernoteDisabled'].currentValue) {
-          this._$element.summernote('disable');
+          Summernote.init(this.el.nativeElement, 'disable');
         } else {
-          this._$element.summernote('enable');
+          Summernote.init(this.el.nativeElement, 'enable');
         }
       }
     }
@@ -152,12 +146,11 @@ export class NgxSummernoteDirective
     }
 
     this._oldModel = content;
-    // this._$element.html(content);
 
     if (this._editorInitialized) {
-      this._$element.summernote('code', content);
+      Summernote.init(this.el.nativeElement, 'code', content);
     } else {
-      this._$element.html(content);
+      this.el.nativeElement.innerHTML = content;
     }
   }
 
@@ -168,7 +161,7 @@ export class NgxSummernoteDirective
       let modelContent: any = null;
 
       if (this._hasSpecialTag) {
-        const attributeNodes = this._$element[0].attributes;
+        const attributeNodes = this.el.nativeElement.attributes;
         const attrs: {[attributeName: string]: string} = {};
 
         for (let i = 0; i < attributeNodes.length; i++) {
@@ -182,8 +175,8 @@ export class NgxSummernoteDirective
           attrs[attrName] = attributeNodes[i].value;
         }
 
-        if (this._$element[0].innerHTML) {
-          attrs[this.INNER_HTML_ATTR] = this._$element[0].innerHTML;
+        if (this.el.nativeElement.innerHTML) {
+          attrs[this.INNER_HTML_ATTR] = this.el.nativeElement.innerHTML;
         }
 
         modelContent = attrs;
@@ -206,27 +199,25 @@ export class NgxSummernoteDirective
   private initListeners() {
     const self = this;
 
-    if (!this._$element) {
+    if (!this.el.nativeElement) {
       return;
     }
 
-    this._$element.on('summernote.init', function() {
+    this.el.nativeElement.addEventListener('summernote.init', function() {
       setTimeout(function() {
         self.updateModel();
       }, 0);
     });
 
-    this._$element.on('summernote.change', function(
-      event: any,
-      contents: any,
-      $editable: any
-    ) {
+    this.el.nativeElement.addEventListener('summernote.change', function(event: any) {
+      const [contents] = event.detail;
+
       setTimeout(function() {
         self.updateModel(contents);
       }, 0);
     });
 
-    this._$element.on('summernote.blur', function() {
+    this.el.nativeElement.addEventListener('summernote.blur', function() {
       setTimeout(function() {
         self.onTouched();
         self.blur.emit();
@@ -234,13 +225,13 @@ export class NgxSummernoteDirective
     });
 
     if (this._options.immediateAngularModelUpdate) {
-      this._editor.on('keyup', function() {
-        setTimeout(function() {
-          self.updateModel();
-        }, 0);
-      });
+      this._editorEl.addEventListener('keyup', this.onEditorElKeyUp);
     }
   }
+
+  onEditorElKeyUp = () => {
+    setTimeout(() => this.updateModel(), 0);
+  };
 
   private createEditor() {
     if (this._editorInitialized) {
@@ -249,37 +240,23 @@ export class NgxSummernoteDirective
 
     this.setContent(true);
 
-    const wait = 50;
     // this.initListeners(); // issue #31
-    try {
-      this._$element = <any>$(this.el.nativeElement);
-    } catch (error) {
-      console.log(`JQuery seems not te loaded yet! Wait ${wait}ms and try again`);
-    }
 
-    if (!this._$element) {
-      setTimeout(() => {
-        this.createEditor();
-      }, wait);
-    } else {
-      // init editor
-      this.zone.runOutsideAngular(() => {
-        this._editor = this._$element
-          .summernote(this._options)
-          .data('summernote').$note;
+    // init editor
+    this.zone.runOutsideAngular(() => {
+      this._editorEl = Summernote.init(this.el.nativeElement, this._options).noteEl;
 
-        this.initListeners(); // issue #31
+      this.initListeners(); // issue #31
 
-        if (this.ngxSummernoteDisabled) {
-          this._$element.summernote('disable');
-        }
-      });
-      this._editorInitialized = true;
-    }
+      if (this.ngxSummernoteDisabled) {
+        Summernote.init(this.el.nativeElement, 'disable');
+      }
+    });
+    this._editorInitialized = true;
   }
 
   private setHtml() {
-    this._$element.summernote('code', this._model || '', true);
+    Summernote.init(this.el.nativeElement, 'code', this._model || '', true);
   }
 
   private setContent(firstTime = false) {
@@ -294,12 +271,16 @@ export class NgxSummernoteDirective
         if (tags) {
           for (const attr in tags) {
             if (tags.hasOwnProperty(attr) && attr !== this.INNER_HTML_ATTR) {
-              this._$element.attr(attr, tags[attr]);
+              if (tags[attr] === null) {
+                this.el.nativeElement.removeAttribute(attr);
+              } else if (tags[attr] !== undefined) {
+                this.el.nativeElement.setAttribute(attr, tags[attr]);
+              }
             }
           }
 
           if (tags.hasOwnProperty(this.INNER_HTML_ATTR)) {
-            this._$element[0].innerHTML = tags[this.INNER_HTML_ATTR];
+            this.el.nativeElement.innerHTML = tags[this.INNER_HTML_ATTR];
           }
         }
       } else {
@@ -310,19 +291,11 @@ export class NgxSummernoteDirective
 
   private destroyEditor() {
     if (this._editorInitialized) {
-      this._editor.off('keyup');
-      this._$element.summernote('destroy'); // TODO not sure it works now...
+      this._editorEl.removeEventListener('keyup', this.onEditorElKeyUp);
+      Summernote.init(this.el.nativeElement, 'destroy'); // TODO not sure it works now...
       this._editorInitialized = false;
     }
   }
-
-  // private getEditor() {
-  //   if (this._$element) {
-  //     return this._$element.summernote.bind(this._$element);
-  //   }
-
-  //   return null;
-  // }
 
   private async uploadImage(files: File[]) {
     if (this._options.uploadImagePath) {
@@ -345,7 +318,7 @@ export class NgxSummernoteDirective
       this.uploadSub = combineLatest(requests).subscribe(
         (remotePaths: (string | false)[]) => {
           for (const remotePath of remotePaths) {
-            this._$element.summernote('insertImage', remotePath);
+            Summernote.init(this.el.nativeElement, 'insertImage', remotePath);
           }
           this.imageUpload.emit({ uploading: false });
         },
@@ -361,7 +334,7 @@ export class NgxSummernoteDirective
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        this._$element.summernote('insertImage', reader.result);
+        Summernote.init(this.el.nativeElement, 'insertImage', reader.result);
         this.imageUpload.emit({ uploading: false, encoding: 'base64' });
       };
       reader.onerror = error => console.error(error);

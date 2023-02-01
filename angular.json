@@ -31,11 +31,10 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/@scompiler/summernote/dist/summernote-teaks2.min.css"
+              "node_modules/@scompiler/summernote/dist/summernote.css"
             ],
             "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/@scompiler/summernote/dist/summernote-teaks2.min.js"
+              "node_modules/@scompiler/summernote/dist/summernote.js"
             ]
           },
           "configurations": {
@@ -98,11 +97,10 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/@scompiler/summernote/dist/summernote-teaks2.css"
+              "node_modules/@scompiler/summernote/dist/summernote.css"
             ],
             "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/@scompiler/summernote/dist/summernote-teaks2.js"
+              "node_modules/@scompiler/summernote/dist/summernote.js"
             ]
           }
         }
