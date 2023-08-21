@@ -192,6 +192,7 @@ npm start
 - Change version:
   - projects/ngx-summernote/package.json
   - package.json
+- Add new version to compatibility table in README.md
 - Build package. Run command ``npm run build:lib``.
 - Publish package. Run command ``npm publish`` from ``dist/ngx-summernote`` directory.
 - Make git commit.
