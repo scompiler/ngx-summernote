@@ -209,20 +209,20 @@ export class NgxSummernoteDirective
       }, 0);
     });
 
-    this.el.nativeElement.addEventListener('summernote.change', function(event: any) {
+    ['summernote.change', 'summernote.change.codeview'].forEach(eventName => this.el.nativeElement.addEventListener(eventName, (event: any) => {
       const [contents] = event.detail;
 
-      setTimeout(function() {
+      setTimeout(() => {
         self.updateModel(contents);
       }, 0);
-    });
+    }));
 
-    this.el.nativeElement.addEventListener('summernote.blur', function() {
-      setTimeout(function() {
+    ['summernote.blur', 'summernote.blur.codeview'].forEach(eventName => this.el.nativeElement.addEventListener(eventName, () => {
+      setTimeout(() => {
         self.onTouched();
         self.blur.emit();
       }, 0);
-    });
+    }));
 
     if (this._options.immediateAngularModelUpdate) {
       this._editorEl.addEventListener('keyup', this.onEditorElKeyUp);
