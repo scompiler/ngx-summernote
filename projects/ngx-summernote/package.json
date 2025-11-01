@@ -13,9 +13,9 @@
     "url": "https://github.com/scompiler/ngx-summernote.git"
   },
   "peerDependencies": {
-    "@angular/common": "^17.3.12",
-    "@angular/core": "^17.3.12",
-    "@angular/forms": "^17.3.12",
+    "@angular/common": "^18.2.14",
+    "@angular/core": "^18.2.14",
+    "@angular/forms": "^18.2.14",
     "@scompiler/summernote": ">=0.3.0"
   },
   "dependencies": {
