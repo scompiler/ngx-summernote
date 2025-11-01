@@ -4,7 +4,8 @@ import {
 
 @Directive({
     // tslint:disable-next-line:directive-selector
-    selector: '[ngxSummernoteView]'
+    selector: '[ngxSummernoteView]',
+    standalone: false
 })
 export class NgxSummernoteViewDirective implements AfterViewInit {
     @Input() set ngxSummernoteView(content: string) {

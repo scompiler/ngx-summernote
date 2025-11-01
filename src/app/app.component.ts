@@ -5,9 +5,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 declare var Summernote: any;
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
+    standalone: false
 })
 export class AppComponent implements OnInit {
   showTemplateForm = false;
